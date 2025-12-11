@@ -1,0 +1,113 @@
+// 设计书定义的色彩系统
+$primary: #2C3E50;
+$background: #F9F9F9;
+$accent: #1ABC9C;
+$secondary: #E74C3C;
+$text-primary: #2C3E50;
+$text-secondary: #555555;
+$text-tertiary: #95A5A6;
+$link: #3498DB;
+$border: #ECF0F1;
+$code-bg: #F8F8F8;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  background-color: $background;
+  color: $text-secondary;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+a {
+  color: $link;
+  text-decoration: none;
+  transition: color 0.3s;
+  &:hover {
+    color: $accent;
+  }
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+// 文章内容样式
+.article-content {
+  h2, h3, h4 {
+    color: $text-primary;
+    margin: 1.5em 0 0.8em;
+  }
+  h2 { font-size: 1.5em; }
+  h3 { font-size: 1.25em; }
+  
+  p {
+    margin-bottom: 1.2em;
+    line-height: 2;
+  }
+  
+  blockquote {
+    border-left: 4px solid $accent;
+    padding: 0.5em 1em;
+    margin: 1em 0;
+    background: $code-bg;
+    color: $text-tertiary;
+    font-style: italic;
+  }
+  
+  pre {
+    background: $code-bg;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1em;
+    overflow-x: auto;
+    margin: 1em 0;
+  }
+  
+  code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9em;
+  }
+  
+  img {
+    max-width: 100%;
+    display: block;
+    margin: 1em auto;
+    border-radius: 4px;
+  }
+}
+
+// 卡片悬停效果
+.hover-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+}
+
+// 标签样式
+.tag {
+  display: inline-block;
+  padding: 2px 10px;
+  background: rgba($accent, 0.1);
+  color: $accent;
+  border-radius: 3px;
+  font-size: 12px;
+  margin-right: 8px;
+}
+
+// 淡入动画
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
