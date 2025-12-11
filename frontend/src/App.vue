@@ -55,7 +55,7 @@ onUnmounted(() => {
 }
 
 .main-content {
-  margin-left: 200px;
+  margin-left: 30%;
   margin-top: 56px;
   min-height: calc(100vh - 56px);
   padding: 24px;
@@ -65,6 +65,18 @@ onUnmounted(() => {
 
 .sidebar-collapsed .main-content {
   margin-left: 64px;
+}
+
+@media (min-width: 1200px) {
+  .main-content {
+    margin-left: 320px;
+  }
+}
+
+@media (max-width: 900px) {
+  .main-content {
+    margin-left: 240px;
+  }
 }
 
 .sidebar-overlay {
