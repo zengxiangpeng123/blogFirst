@@ -1,36 +1,54 @@
 <template>
   <header class="navbar">
-    <div class="container nav-inner">
-      <router-link to="/" class="logo">静隅思录</router-link>
-      
-      <nav class="nav-menu" :class="{ active: menuOpen }">
-        <router-link to="/">首页</router-link>
-        <el-dropdown trigger="hover">
-          <span class="nav-link">文章分类 <el-icon><ArrowDown /></el-icon></span>
+    <div class="nav-inner">
+      <!-- 左侧：汉堡菜单 + Logo -->
+      <div class="nav-left">
+        <el-icon class="menu-btn" @click="toggleSidebar">
+          <Fold v-if="sidebarExpanded" />
+          <Expand v-else />
+        </el-icon>
+        <router-link to="/" class="logo">
+          <img src="/images/图标.png" alt="logo" class="logo-icon" />
+          <span class="logo-text">静隅思录</span>
+        </router-link>
+      </div>
+
+      <!-- 中间：搜索框 -->
+      <div class="nav-center">
+        <div class="search-wrapper">
+          <el-input
+            v-model="searchText"
+            placeholder="搜索文章、标签、分类..."
+            class="search-input"
+            @keyup.enter="handleSearch"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+          <el-button type="primary" class="search-btn" @click="handleSearch">搜索</el-button>
+        </div>
+      </div>
+
+      <!-- 右侧：操作按钮 -->
+      <div class="nav-right">
+        <el-button type="primary" round class="write-btn">
+          <el-icon><EditPen /></el-icon>
+          <span>写文章</span>
+        </el-button>
+        <el-badge :value="3" :max="99" class="msg-badge">
+          <el-icon class="nav-icon"><Bell /></el-icon>
+        </el-badge>
+        <el-dropdown trigger="click">
+          <el-avatar :size="36" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" />
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-for="cat in categories" :key="cat.name">
-                <router-link :to="`/category/${cat.name}`">{{ cat.name }}</router-link>
-              </el-dropdown-item>
+              <el-dropdown-item><el-icon><User /></el-icon> 个人中心</el-dropdown-item>
+              <el-dropdown-item><el-icon><Setting /></el-icon> 设置</el-dropdown-item>
+              <el-dropdown-item divided><el-icon><SwitchButton /></el-icon> 退出</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <router-link to="/about">关于我</router-link>
-        <router-link to="/projects">作品集</router-link>
-        <router-link to="/archive">归档</router-link>
-      </nav>
-      
-      <div class="nav-right">
-        <el-input
-          v-if="showSearch"
-          v-model="searchText"
-          placeholder="搜索文章..."
-          size="small"
-          style="width: 200px"
-          @keyup.enter="handleSearch"
-        />
-        <el-icon class="search-icon" @click="showSearch = !showSearch"><Search /></el-icon>
-        <el-icon class="menu-toggle" @click="menuOpen = !menuOpen"><Menu /></el-icon>
       </div>
     </div>
   </header>
@@ -38,55 +56,114 @@
 
 <script setup>
 import { ref } from 'vue'
-import { categories } from '@/data/mock'
+import { Fold, Expand, EditPen, Bell, User, Setting, SwitchButton } from '@element-plus/icons-vue'
 
-const menuOpen = ref(false)
-const showSearch = ref(false)
+const emit = defineEmits(['toggle-sidebar'])
+const props = defineProps({
+  sidebarExpanded: { type: Boolean, default: true }
+})
+
 const searchText = ref('')
 
+const toggleSidebar = () => {
+  emit('toggle-sidebar')
+}
+
 const handleSearch = () => {
-  console.log('搜索:', searchText.value)
+  if (searchText.value) {
+    console.log('搜索:', searchText.value)
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 .navbar {
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #E8E8E8;
+  z-index: 1000;
 }
 
 .nav-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
+  height: 100%;
+  padding: 0 20px;
 }
 
-.logo {
-  font-size: 1.4em;
-  font-weight: 600;
-  color: #2C3E50;
-  font-family: 'Georgia', serif;
-}
-
-.nav-menu {
+.nav-left {
   display: flex;
-  gap: 30px;
+  align-items: center;
+  gap: 16px;
   
-  a, .nav-link {
+  .menu-btn {
+    font-size: 20px;
     color: #555;
-    font-size: 15px;
-    transition: color 0.3s;
     cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    
+    &:hover {
+      background: #F5F5F5;
+      color: #1ABC9C;
+    }
+  }
+  
+  .logo {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 10px;
     
-    &:hover, &.router-link-active {
-      color: #1ABC9C;
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+    }
+    
+    .logo-text {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #2C3E50;
+      font-family: 'Georgia', serif;
+    }
+  }
+}
+
+.nav-center {
+  flex: 1;
+  max-width: 500px;
+  margin: 0 40px;
+  
+  .search-wrapper {
+    display: flex;
+    
+    .search-input {
+      :deep(.el-input__wrapper) {
+        border-radius: 20px 0 0 20px;
+        box-shadow: 0 0 0 1px #DCDFE6 inset;
+        
+        &:hover, &:focus-within {
+          box-shadow: 0 0 0 1px #1ABC9C inset;
+        }
+      }
+    }
+    
+    .search-btn {
+      border-radius: 0 20px 20px 0;
+      background: #1ABC9C;
+      border-color: #1ABC9C;
+      padding: 8px 20px;
+      
+      &:hover {
+        background: #16A085;
+        border-color: #16A085;
+      }
     }
   }
 }
@@ -94,37 +171,49 @@ const handleSearch = () => {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
   
-  .search-icon {
-    font-size: 18px;
-    cursor: pointer;
+  .write-btn {
+    background: linear-gradient(135deg, #1ABC9C, #16A085);
+    border: none;
+    
+    span { margin-left: 4px; }
+    
+    &:hover {
+      background: linear-gradient(135deg, #16A085, #138D75);
+    }
+  }
+  
+  .nav-icon {
+    font-size: 20px;
     color: #555;
+    cursor: pointer;
+    
     &:hover { color: #1ABC9C; }
   }
   
-  .menu-toggle {
-    display: none;
-    font-size: 22px;
+  .msg-badge {
     cursor: pointer;
+    
+    :deep(.el-badge__content) {
+      background: #E74C3C;
+    }
+  }
+  
+  .el-avatar {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+    
+    &:hover {
+      border-color: #1ABC9C;
+    }
   }
 }
 
 @media (max-width: 768px) {
-  .nav-menu {
-    display: none;
-    &.active {
-      display: flex;
-      flex-direction: column;
-      position: absolute;
-      top: 60px;
-      left: 0;
-      right: 0;
-      background: #fff;
-      padding: 20px;
-      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-    }
-  }
-  .menu-toggle { display: block !important; }
+  .nav-center { display: none; }
+  .write-btn span { display: none; }
+  .nav-right { gap: 12px; }
 }
 </style>

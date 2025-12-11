@@ -1,25 +1,83 @@
 <template>
-  <div id="app">
-    <NavBar />
+  <div id="app" :class="{ 'sidebar-collapsed': !sidebarExpanded }">
+    <NavBar :sidebar-expanded="sidebarExpanded" @toggle-sidebar="toggleSidebar" />
+    <SideMenu :expanded="sidebarExpanded" />
+    
     <main class="main-content">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>
+      <FooterBar />
     </main>
-    <FooterBar />
+    
+    <!-- 移动端遮罩 -->
+    <transition name="fade">
+      <div v-if="sidebarExpanded && isMobile" class="sidebar-overlay" @click="sidebarExpanded = false"></div>
+    </transition>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
 import NavBar from './components/NavBar.vue'
+import SideMenu from './components/SideMenu.vue'
 import FooterBar from './components/FooterBar.vue'
+
+const sidebarExpanded = ref(true)
+const isMobile = ref(false)
+
+const toggleSidebar = () => {
+  sidebarExpanded.value = !sidebarExpanded.value
+}
+
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 768
+  if (isMobile.value) {
+    sidebarExpanded.value = false
+  }
+}
+
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
 </script>
 
 <style lang="scss" scoped>
+#app {
+  min-height: 100vh;
+}
+
 .main-content {
-  min-height: calc(100vh - 180px);
-  padding: 30px 0;
+  margin-left: 200px;
+  margin-top: 56px;
+  min-height: calc(100vh - 56px);
+  padding: 24px;
+  background: #F5F7FA;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar-collapsed .main-content {
+  margin-left: 64px;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 56px 0 0 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 998;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0 !important;
+    padding: 16px;
+  }
 }
 </style>
