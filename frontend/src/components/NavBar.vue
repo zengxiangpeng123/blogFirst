@@ -32,20 +32,22 @@
 
       <!-- 右侧：操作按钮 -->
       <div class="nav-right">
-        <el-button type="primary" round class="write-btn">
-          <el-icon><EditPen /></el-icon>
-          <span>写文章</span>
-        </el-button>
+        <router-link to="/write">
+          <el-button type="primary" round class="write-btn">
+            <el-icon><EditPen /></el-icon>
+            <span>写文章</span>
+          </el-button>
+        </router-link>
         <el-badge :value="3" :max="99" class="msg-badge">
           <el-icon class="nav-icon"><Bell /></el-icon>
         </el-badge>
-        <el-dropdown trigger="click">
-          <el-avatar :size="36" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" />
+        <el-dropdown trigger="click" @command="handleCommand">
+          <el-avatar :size="36" src="/images/图标.png" />
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item><el-icon><User /></el-icon> 个人中心</el-dropdown-item>
-              <el-dropdown-item><el-icon><Setting /></el-icon> 设置</el-dropdown-item>
-              <el-dropdown-item divided><el-icon><SwitchButton /></el-icon> 退出</el-dropdown-item>
+              <el-dropdown-item command="profile"><el-icon><User /></el-icon> 个人中心</el-dropdown-item>
+              <el-dropdown-item command="settings"><el-icon><Setting /></el-icon> 设置</el-dropdown-item>
+              <el-dropdown-item command="logout" divided><el-icon><SwitchButton /></el-icon> 退出</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -56,8 +58,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Fold, Expand, EditPen, Bell, User, Setting, SwitchButton } from '@element-plus/icons-vue'
 
+const router = useRouter()
 const emit = defineEmits(['toggle-sidebar'])
 const props = defineProps({
   sidebarExpanded: { type: Boolean, default: true }
@@ -72,6 +76,20 @@ const toggleSidebar = () => {
 const handleSearch = () => {
   if (searchText.value) {
     console.log('搜索:', searchText.value)
+  }
+}
+
+const handleCommand = (command) => {
+  switch (command) {
+    case 'profile':
+      router.push('/profile')
+      break
+    case 'settings':
+      router.push('/settings')
+      break
+    case 'logout':
+      console.log('退出登录')
+      break
   }
 }
 </script>
