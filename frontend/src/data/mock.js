@@ -9,11 +9,49 @@ export const author = {
 }
 
 export const categories = [
-  { name: '设计沉思', count: 12 },
-  { name: '技术探索', count: 8 },
-  { name: '生活随笔', count: 15 },
-  { name: '读书笔记', count: 6 },
-  { name: '哲学思辨', count: 4 }
+  { 
+    name: '设计沉思', 
+    count: 12,
+    children: [
+      { name: 'UI设计', count: 5 },
+      { name: 'UX体验', count: 4 },
+      { name: '设计理论', count: 3 }
+    ]
+  },
+  { 
+    name: '技术探索', 
+    count: 8,
+    children: [
+      { name: '前端开发', count: 4 },
+      { name: '后端开发', count: 2 },
+      { name: '工具分享', count: 2 }
+    ]
+  },
+  { 
+    name: '生活随笔', 
+    count: 15,
+    children: [
+      { name: '日常记录', count: 8 },
+      { name: '旅行见闻', count: 4 },
+      { name: '美食探店', count: 3 }
+    ]
+  },
+  { 
+    name: '读书笔记', 
+    count: 6,
+    children: [
+      { name: '技术书籍', count: 3 },
+      { name: '人文社科', count: 3 }
+    ]
+  },
+  { 
+    name: '哲学思辨', 
+    count: 4,
+    children: [
+      { name: '人生感悟', count: 2 },
+      { name: '思维方式', count: 2 }
+    ]
+  }
 ]
 
 export const articles = [

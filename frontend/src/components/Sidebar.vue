@@ -11,15 +11,29 @@
     <!-- 分类目录 -->
     <div class="widget">
       <h4 class="widget-title">分类目录</h4>
-      <div class="category-list">
-        <router-link 
-          v-for="cat in categories" 
-          :key="cat.name"
-          :to="`/category/${cat.name}`"
-          class="category-item"
-        >
-          {{ cat.name }} <span>({{ cat.count }})</span>
-        </router-link>
+      <div class="category-menu">
+        <div v-for="cat in categories" :key="cat.name" class="category-group">
+          <div class="category-parent" @click="toggleCategory(cat.name)">
+            <el-icon class="collapse-icon" :class="{ collapsed: !expandedCategories[cat.name] }">
+              <ArrowDown />
+            </el-icon>
+            <router-link :to="`/category/${cat.name}`" @click.stop class="parent-link">
+              {{ cat.name }} <span>({{ cat.count }})</span>
+            </router-link>
+          </div>
+          <transition name="collapse">
+            <div v-show="expandedCategories[cat.name]" class="category-children">
+              <router-link 
+                v-for="child in cat.children" 
+                :key="child.name"
+                :to="`/category/${cat.name}/${child.name}`"
+                class="category-child"
+              >
+                {{ child.name }} <span>({{ child.count }})</span>
+              </router-link>
+            </div>
+          </transition>
+        </div>
       </div>
     </div>
     
@@ -45,10 +59,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
+import { ArrowDown } from '@element-plus/icons-vue'
 import { author, categories, hotArticles } from '@/data/mock'
 
 const email = ref('')
+
+// 记录每个一级分类的展开状态
+const expandedCategories = reactive({})
+
+const toggleCategory = (name) => {
+  expandedCategories[name] = !expandedCategories[name]
+}
 </script>
 
 <style lang="scss" scoped>
@@ -95,25 +117,86 @@ const email = ref('')
   }
 }
 
-.category-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.category-menu {
+  .category-group {
+    margin-bottom: 8px;
+  }
   
-  .category-item {
-    padding: 5px 12px;
-    background: #F9F9F9;
-    border-radius: 15px;
+  .category-parent {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+    
+    .collapse-icon {
+      transition: transform 0.3s ease;
+      color: #95A5A6;
+      margin-right: 8px;
+      font-size: 12px;
+      
+      &.collapsed {
+        transform: rotate(-90deg);
+      }
+    }
+    
+    .parent-link {
+      font-size: 14px;
+      color: #2C3E50;
+      font-weight: 500;
+      
+      span { 
+        color: #95A5A6; 
+        font-weight: normal;
+      }
+      
+      &:hover {
+        color: #1ABC9C;
+      }
+    }
+    
+    &:hover .collapse-icon {
+      color: #1ABC9C;
+    }
+  }
+  
+  .category-children {
+    padding-left: 20px;
+    overflow: hidden;
+  }
+  
+  .category-child {
+    display: block;
+    padding: 6px 12px;
     font-size: 13px;
-    color: #555;
+    color: #666;
+    border-left: 2px solid #ECF0F1;
+    margin-bottom: 2px;
     
     span { color: #95A5A6; }
     
     &:hover {
-      background: rgba(#1ABC9C, 0.1);
       color: #1ABC9C;
+      border-left-color: #1ABC9C;
+      background: rgba(#1ABC9C, 0.05);
     }
   }
+}
+
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: all 0.3s ease;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+  max-height: 0;
+}
+
+.collapse-enter-to,
+.collapse-leave-from {
+  opacity: 1;
+  max-height: 300px;
 }
 
 .hot-list {

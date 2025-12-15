@@ -3,6 +3,7 @@ package com.example.back_end.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.back_end.model.domain.User;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
 * @author 15173
@@ -12,5 +13,11 @@ import com.example.back_end.model.domain.User;
 public interface UserService extends IService<User> {
 
 
-    long userRegister(String userAccount, String userPassword, String checkPassword);
+    Long userRegister(String username, String userPassword, String checkPassword);
+
+    User userLogin(String username, String userPassword, HttpServletRequest request);
+
+    void userLogout(HttpServletRequest request);
+
+    User getSafetyUser(User user);
 }
