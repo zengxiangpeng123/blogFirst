@@ -98,9 +98,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Document, View, Star, ChatDotRound } from '@element-plus/icons-vue'
-import { articles } from '@/data/mock'
+import { getMyArticles } from '@/api/article'
+import { ElMessage } from 'element-plus'
 
 const userInfo = ref({
   name: '林清远',
@@ -113,7 +114,36 @@ const userInfo = ref({
   commentCount: 134
 })
 
-const myArticles = ref(articles.slice(0, 5))
+const myArticles = ref([])
+const loading = ref(false)
+
+// 加载我的文章
+const loadMyArticles = async () => {
+  // 从 localStorage 获取当前用户信息
+  const userInfoStr = localStorage.getItem('userInfo')
+  if (!userInfoStr) {
+    ElMessage.warning('请先登录')
+    return
+  }
+  
+  const currentUser = JSON.parse(userInfoStr)
+  const userId = currentUser.id
+  
+  loading.value = true
+  try {
+    const res = await getMyArticles(userId, 1, 5)
+    myArticles.value = res.data.records || []
+  } catch (error) {
+    ElMessage.error('加载文章失败')
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  loadMyArticles()
+})
 </script>
 
 <style lang="scss" scoped>

@@ -19,7 +19,7 @@
     
     <div class="card-footer">
       <div class="tags">
-        <span v-for="tag in article.tags" :key="tag" class="tag">{{ tag }}</span>
+        <span v-for="tag in tags" :key="tag" class="tag">{{ tag }}</span>
       </div>
       <router-link :to="`/article/${article.id}`" class="read-more">继续阅读 →</router-link>
     </div>
@@ -27,8 +27,19 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   article: { type: Object, required: true }
+})
+
+// 将标签字符串转换为数组
+const tags = computed(() => {
+  if (!props.article.tags) return []
+  // 如果已经是数组，直接返回
+  if (Array.isArray(props.article.tags)) return props.article.tags
+  // 如果是字符串，按逗号分割
+  return props.article.tags.split(',').filter(tag => tag.trim())
 })
 </script>
 

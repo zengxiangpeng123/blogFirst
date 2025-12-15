@@ -20,29 +20,66 @@
       <router-link to="/archive" class="more-link">查看更多 →</router-link>
     </div>
     
-    <div class="article-list">
+    <div v-loading="loading" class="article-list">
       <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
+      <el-empty v-if="!loading && articles.length === 0" description="暂无文章" />
     </div>
     
     <el-pagination
+      v-if="total > 0"
       layout="prev, pager, next"
-      :total="50"
-      :page-size="10"
+      :total="total"
+      :page-size="pageSize"
+      :current-page="currentPage"
       background
       class="pagination"
+      @current-change="handlePageChange"
     />
   </div>
 </template>
 
 <script setup>
-import { articles } from '@/data/mock'
+import { ref, onMounted } from 'vue'
+import { getAllArticles } from '@/api/article'
 import ArticleCard from '@/components/ArticleCard.vue'
+import { ElMessage } from 'element-plus'
+
+const articles = ref([])
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+const loading = ref(false)
 
 const carouselImages = [
   { src: '/images/static_index/首页界面图片_1.png', title: '静隅思录', desc: '在喧嚣中寻一处静隅，记录思考与成长' },
   { src: '/images/static_index/首页界面图片_2.png', title: '深度思考', desc: '沉淀知识，探索未知的边界' },
   { src: '/images/static_index/首页界面图片_3.png', title: '生活感悟', desc: '用文字记录生活中的点滴美好' }
 ]
+
+// 加载文章列表
+const loadArticles = async () => {
+  loading.value = true
+  try {
+    const res = await getAllArticles(currentPage.value, pageSize.value)
+    articles.value = res.data.records || []
+    total.value = res.data.total || 0
+  } catch (error) {
+    ElMessage.error('加载文章失败')
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 分页改变
+const handlePageChange = (page) => {
+  currentPage.value = page
+  loadArticles()
+}
+
+onMounted(() => {
+  loadArticles()
+})
 </script>
 
 <style lang="scss" scoped>

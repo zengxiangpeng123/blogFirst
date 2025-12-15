@@ -12,6 +12,8 @@ import com.example.back_end.model.domain.Article;
 */
 public interface ArticleMapper extends BaseMapper<Article> {
 
+
+
 }
 
 

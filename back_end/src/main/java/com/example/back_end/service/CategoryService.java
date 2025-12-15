@@ -11,4 +11,5 @@ import com.example.back_end.model.domain.Category;
 */
 public interface CategoryService extends IService<Category> {
 
+
 }

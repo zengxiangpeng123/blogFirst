@@ -6,7 +6,7 @@
         <span class="cat-dot" :style="{ background: getCategoryColor(categoryName) }"></span>
         <div>
           <h1>{{ categoryName }}</h1>
-          <p>共 {{ filteredArticles.length }} 篇文章</p>
+          <p>共 {{ total }} 篇文章</p>
         </div>
       </div>
       
@@ -20,32 +20,39 @@
     </header>
 
     <!-- 文章列表 -->
-    <div class="article-list" v-if="sortedArticles.length > 0">
-      <ArticleCard v-for="article in sortedArticles" :key="article.id" :article="article" />
+    <div v-loading="loading" class="article-list">
+      <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
+      <el-empty v-if="!loading && articles.length === 0" description="该分类暂无文章" />
     </div>
-
-    <el-empty v-else description="该分类暂无文章" />
 
     <!-- 分页 -->
     <el-pagination
-      v-if="sortedArticles.length > 0"
+      v-if="total > 0"
       layout="prev, pager, next"
-      :total="sortedArticles.length"
-      :page-size="10"
+      :total="total"
+      :page-size="pageSize"
+      :current-page="currentPage"
       background
       class="pagination"
+      @current-change="handlePageChange"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { articles } from '@/data/mock'
+import { getArticlesByCategory } from '@/api/article'
 import ArticleCard from '@/components/ArticleCard.vue'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const sortBy = ref('latest')
+const articles = ref([])
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+const loading = ref(false)
 
 const categoryName = computed(() => route.params.name)
 
@@ -59,16 +66,52 @@ const categoryColors = {
 
 const getCategoryColor = (name) => categoryColors[name] || '#95A5A6'
 
-const filteredArticles = computed(() => 
-  articles.filter(a => a.category === categoryName.value)
-)
-
-const sortedArticles = computed(() => {
-  const list = [...filteredArticles.value]
-  if (sortBy.value === 'views') {
-    return list.sort((a, b) => b.views - a.views)
+// 加载文章列表
+const loadArticles = async () => {
+  // 注意：这里需要 categoryId，但路由传的是 categoryName
+  // 实际项目中需要先根据 categoryName 查询 categoryId
+  // 暂时使用 mock 数据的映射
+  const categoryIdMap = {
+    '设计沉思': 1,
+    '技术探索': 2,
+    '生活随笔': 3,
+    '读书笔记': 4,
+    '哲学思辨': 5
   }
-  return list.sort((a, b) => new Date(b.date) - new Date(a.date))
+  
+  const categoryId = categoryIdMap[categoryName.value]
+  if (!categoryId) {
+    ElMessage.warning('分类不存在')
+    return
+  }
+  
+  loading.value = true
+  try {
+    const res = await getArticlesByCategory(categoryId, currentPage.value, pageSize.value)
+    articles.value = res.data.records || []
+    total.value = res.data.total || 0
+  } catch (error) {
+    ElMessage.error('加载文章失败')
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 分页改变
+const handlePageChange = (page) => {
+  currentPage.value = page
+  loadArticles()
+}
+
+// 监听分类变化
+watch(categoryName, () => {
+  currentPage.value = 1
+  loadArticles()
+})
+
+onMounted(() => {
+  loadArticles()
 })
 </script>
 

@@ -66,7 +66,7 @@ public class Article {
     private Integer isPinned;
 
     /**
-     * 是否发布
+     * 是否发布,0是未发布,1是发布
      */
     private Integer isPublished;
 
@@ -79,4 +79,10 @@ public class Article {
      * 
      */
     private Date updatedAt;
+
+    /**
+     * 0是正常,1是删除
+     */
+    private int isDelete;
+
 }

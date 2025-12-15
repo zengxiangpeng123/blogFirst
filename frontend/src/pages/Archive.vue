@@ -27,30 +27,37 @@
       </div>
     </header>
 
-    <div class="article-list">
-      <ArticleCard v-for="article in sortedArticles" :key="article.id" :article="article" />
+    <div v-loading="loading" class="article-list">
+      <ArticleCard v-for="article in articles" :key="article.id" :article="article" />
+      <el-empty v-if="!loading && articles.length === 0" description="暂无文章" />
     </div>
 
     <el-pagination
-      v-if="sortedArticles.length > 0"
+      v-if="total > 0"
       layout="prev, pager, next"
-      :total="sortedArticles.length"
-      :page-size="10"
+      :total="total"
+      :page-size="pageSize"
+      :current-page="currentPage"
       background
       class="pagination"
+      @current-change="handlePageChange"
     />
-
-    <el-empty v-if="sortedArticles.length === 0" description="暂无文章" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { articles } from '@/data/mock'
+import { ref, onMounted } from 'vue'
+import { getAllArticles } from '@/api/article'
 import ArticleCard from '@/components/ArticleCard.vue'
+import { ElMessage } from 'element-plus'
 
 const activeTab = ref('all')
 const sortBy = ref('latest')
+const articles = ref([])
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+const loading = ref(false)
 
 const filterTabs = [
   { label: '全部', value: 'all' },
@@ -60,22 +67,29 @@ const filterTabs = [
   { label: '生活', value: '生活随笔' }
 ]
 
-const filteredArticles = computed(() => {
-  if (activeTab.value === 'all') return articles
-  if (activeTab.value === 'pinned') return articles.filter(a => a.pinned)
-  return articles.filter(a => a.category === activeTab.value)
-})
-
-const sortedArticles = computed(() => {
-  const list = [...filteredArticles.value]
-  switch (sortBy.value) {
-    case 'views':
-      return list.sort((a, b) => b.views - a.views)
-    case 'readTime':
-      return list.sort((a, b) => b.readTime - a.readTime)
-    default:
-      return list.sort((a, b) => new Date(b.date) - new Date(a.date))
+// 加载文章列表
+const loadArticles = async () => {
+  loading.value = true
+  try {
+    const res = await getAllArticles(currentPage.value, pageSize.value)
+    articles.value = res.data.records || []
+    total.value = res.data.total || 0
+  } catch (error) {
+    ElMessage.error('加载文章失败')
+    console.error(error)
+  } finally {
+    loading.value = false
   }
+}
+
+// 分页改变
+const handlePageChange = (page) => {
+  currentPage.value = page
+  loadArticles()
+}
+
+onMounted(() => {
+  loadArticles()
 })
 </script>
 

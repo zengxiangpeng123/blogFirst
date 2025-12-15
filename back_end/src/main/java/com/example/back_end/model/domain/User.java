@@ -59,4 +59,9 @@ public class User {
      * 
      */
     private Date updatedAt;
+
+    /**
+     * 0是正常,1是删除
+     */
+    private int isDelete;
 }

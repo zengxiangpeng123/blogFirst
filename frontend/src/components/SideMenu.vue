@@ -9,11 +9,15 @@
         </router-link>
         <router-link to="/archive" class="menu-item" exact-active-class="active">
           <el-icon><Document /></el-icon>
-          <span v-show="expanded">文章</span>
+          <span v-show="expanded">全部文章</span>
+        </router-link>
+        <router-link to="/profile" class="menu-item" exact-active-class="active">
+          <el-icon><Edit /></el-icon>
+          <span v-show="expanded">我的文章</span>
         </router-link>
         <router-link to="/projects" class="menu-item" exact-active-class="active">
           <el-icon><Folder /></el-icon>
-          <span v-show="expanded">作品集</span>
+          <span v-show="expanded">我的作品</span>
         </router-link>
         <router-link to="/about" class="menu-item" exact-active-class="active">
           <el-icon><UserFilled /></el-icon>
@@ -74,7 +78,7 @@
 
 <script setup>
 import { categories } from '@/data/mock'
-import { HomeFilled, Document, Folder, UserFilled, Star, Clock, Bell } from '@element-plus/icons-vue'
+import { HomeFilled, Document, Folder, UserFilled, Star, Clock, Bell, Edit } from '@element-plus/icons-vue'
 
 defineProps({
   expanded: { type: Boolean, default: true }
