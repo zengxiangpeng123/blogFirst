@@ -2,7 +2,7 @@ package com.example.back_end.service.impl;
 
 
 import com.example.back_end.mapper.CategoryMapper;
-import com.example.back_end.model.dao.Category;
+import com.example.back_end.model.domain.Category;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

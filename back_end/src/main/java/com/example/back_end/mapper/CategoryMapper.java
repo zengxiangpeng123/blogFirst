@@ -1,7 +1,7 @@
 package com.example.back_end.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.back_end.model.dao.Category;
+import com.example.back_end.model.domain.Category;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

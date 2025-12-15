@@ -3,7 +3,7 @@ package com.example.back_end.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.back_end.mapper.FavoriteMapper;
-import com.example.back_end.model.dao.Favorite;
+import com.example.back_end.model.domain.Favorite;
 import com.example.back_end.service.FavoriteService;
 import org.springframework.stereotype.Service;
 

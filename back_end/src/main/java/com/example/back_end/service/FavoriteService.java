@@ -2,7 +2,7 @@ package com.example.back_end.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.back_end.model.dao.Favorite;
+import com.example.back_end.model.domain.Favorite;
 
 /**
 * @author 15173

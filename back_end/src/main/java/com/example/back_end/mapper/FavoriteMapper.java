@@ -2,7 +2,7 @@ package com.example.back_end.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.back_end.model.dao.Favorite;
+import com.example.back_end.model.domain.Favorite;
 
 /**
 * @author 15173

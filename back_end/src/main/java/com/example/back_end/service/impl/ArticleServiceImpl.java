@@ -3,7 +3,7 @@ package com.example.back_end.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.back_end.mapper.ArticleMapper;
-import com.example.back_end.model.dao.Article;
+import com.example.back_end.model.domain.Article;
 import com.example.back_end.service.ArticleService;
 import org.springframework.stereotype.Service;
 

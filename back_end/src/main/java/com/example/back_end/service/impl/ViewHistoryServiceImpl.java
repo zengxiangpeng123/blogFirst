@@ -2,7 +2,7 @@ package com.example.back_end.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.back_end.mapper.ViewHistoryMapper;
-import com.example.back_end.model.dao.ViewHistory;
+import com.example.back_end.model.domain.ViewHistory;
 import com.example.back_end.service.ViewHistoryService;
 import org.springframework.stereotype.Service;
 

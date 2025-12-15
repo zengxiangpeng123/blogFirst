@@ -1,4 +1,4 @@
-package com.example.back_end.model.dao;
+package com.example.back_end.model.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -8,12 +8,12 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 收藏表
- * @TableName favorite
+ * 浏览历史表
+ * @TableName view_history
  */
-@TableName(value ="favorite")
+@TableName(value ="view_history")
 @Data
-public class Favorite {
+public class ViewHistory {
     /**
      * 
      */
@@ -31,7 +31,7 @@ public class Favorite {
     private Long articleId;
 
     /**
-     * 
+     * 浏览时间
      */
-    private Date createdAt;
+    private Date viewedAt;
 }

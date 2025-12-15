@@ -2,7 +2,7 @@ package com.example.back_end.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.back_end.model.dao.User;
+import com.example.back_end.model.domain.User;
 
 /**
 * @author 15173
@@ -11,4 +11,6 @@ import com.example.back_end.model.dao.User;
 */
 public interface UserService extends IService<User> {
 
+
+    long userRegister(String userAccount, String userPassword, String checkPassword);
 }
