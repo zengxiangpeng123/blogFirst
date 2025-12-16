@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.back_end.common.ErrorCode;
 import com.example.back_end.exceptionHandler.LoginException;
+import com.example.back_end.exceptionHandler.UserOperationException;
 import com.example.back_end.mapper.UserMapper;
 import com.example.back_end.model.domain.User;
 import com.example.back_end.service.UserService;
@@ -37,6 +38,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserMapper userMapper;
 
+    /**
+     *  获取当前登录用户信息
+     * @param request 请求
+     * @return 当前登录用户信息(脱敏)
+     */
+    @Override
+    public User getCurrentUser(HttpServletRequest request) {
+        if(request == null){
+            throw new UserOperationException(ErrorCode.NULL_ERROR,"请求为空!请先登录");
+        }
+        User user = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        if(user == null){
+            throw new UserOperationException(ErrorCode.NOT_LOGIN,"未登录!请先登录");
+        }
+        return this.getSafetyUser(user);
+    }
     /**
      * 用户的注册
      *

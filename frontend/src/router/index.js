@@ -14,7 +14,9 @@ const routes = [
   { path: '/subscribe', name: 'Subscribe', component: () => import('@/pages/Subscribe.vue') },
   { path: '/profile', name: 'Profile', component: () => import('@/pages/Profile.vue') },
   { path: '/settings', name: 'Settings', component: () => import('@/pages/Settings.vue') },
-  { path: '/write', name: 'Write', component: () => import('@/pages/Write.vue'), meta: { hideLayout: true } }
+  { path: '/write', name: 'Write', component: () => import('@/pages/Write.vue'), meta: { hideLayout: true } },
+  { path: '/my-articles', name: 'MyArticles', component: () => import('@/pages/MyArticles.vue') },
+  { path: '/my-projects', name: 'MyProjects', component: () => import('@/pages/MyProjects.vue') }
 ]
 
 const router = createRouter({

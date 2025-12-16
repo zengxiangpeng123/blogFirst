@@ -32,10 +32,20 @@ request.interceptors.response.use(
       // code 为 0 或 200 表示成功
       if (res.code === 0 || res.code === 200) {
         return res
-      } else {
-        // 业务失败
-        return Promise.reject(new Error(res.message || '操作失败'))
       }
+      
+      // 40100: 未登录，跳转到登录页
+      if (res.code === 40100) {
+        // 清除本地存储
+        localStorage.removeItem('token')
+        localStorage.removeItem('userInfo')
+        // 跳转到登录页
+        window.location.href = '/login'
+        return Promise.reject(new Error('请先登录'))
+      }
+      
+      // 其他业务失败
+      return Promise.reject(new Error(res.message || '操作失败'))
     }
     
     // 如果没有 code 字段，直接返回数据（兼容某些接口）

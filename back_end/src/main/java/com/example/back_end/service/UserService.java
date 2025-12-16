@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 public interface UserService extends IService<User> {
 
 
+    User getCurrentUser(HttpServletRequest request);
+
     Long userRegister(String username, String userPassword, String checkPassword);
 
     User userLogin(String username, String userPassword, HttpServletRequest request);

@@ -22,3 +22,10 @@ export const login = (data) => {
 export const logout = () => {
   return request.post('/user/logout')
 }
+
+/**
+ * 获取当前登录用户信息
+ */
+export const getCurrentUser = () => {
+  return request.post('/user/current')
+}

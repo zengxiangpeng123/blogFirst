@@ -1,8 +1,9 @@
 <template>
   <aside class="side-menu" :class="{ collapsed: !expanded }">
     <nav class="menu-nav">
-      <!-- 主导航 -->
+      <!-- 全局导航 -->
       <div class="menu-section">
+        <div class="section-title" v-show="expanded">全部内容</div>
         <router-link to="/" class="menu-item" exact-active-class="active">
           <el-icon><HomeFilled /></el-icon>
           <span v-show="expanded">首页</span>
@@ -11,36 +12,29 @@
           <el-icon><Document /></el-icon>
           <span v-show="expanded">全部文章</span>
         </router-link>
-        <router-link to="/profile" class="menu-item" exact-active-class="active">
-          <el-icon><Edit /></el-icon>
-          <span v-show="expanded">我的文章</span>
-        </router-link>
         <router-link to="/projects" class="menu-item" exact-active-class="active">
           <el-icon><Folder /></el-icon>
-          <span v-show="expanded">我的作品</span>
-        </router-link>
-        <router-link to="/about" class="menu-item" exact-active-class="active">
-          <el-icon><UserFilled /></el-icon>
-          <span v-show="expanded">关于我</span>
+          <span v-show="expanded">全部作品</span>
         </router-link>
       </div>
 
       <!-- 分割线 -->
       <div class="menu-divider" v-show="expanded"></div>
 
-      <!-- 分类导航 -->
-      <div class="menu-section" v-show="expanded">
-        <div class="section-title">文章分类</div>
-        <router-link
-          v-for="cat in categories"
-          :key="cat.name"
-          :to="`/category/${cat.name}`"
-          class="menu-item category-item"
-          exact-active-class="active"
-        >
-          <span class="cat-dot" :style="{ background: getCategoryColor(cat.name) }"></span>
-          <span>{{ cat.name }}</span>
-          <span class="cat-count">{{ cat.count }}</span>
+      <!-- 个人内容 -->
+      <div class="menu-section">
+        <div class="section-title" v-show="expanded">我的内容</div>
+        <router-link to="/my-articles" class="menu-item" exact-active-class="active">
+          <el-icon><Edit /></el-icon>
+          <span v-show="expanded">我的文章</span>
+        </router-link>
+        <router-link to="/my-projects" class="menu-item" exact-active-class="active">
+          <el-icon><Folder /></el-icon>
+          <span v-show="expanded">我的作品</span>
+        </router-link>
+        <router-link to="/about" class="menu-item" exact-active-class="active">
+          <el-icon><UserFilled /></el-icon>
+          <span v-show="expanded">个人介绍</span>
         </router-link>
       </div>
 
@@ -77,22 +71,11 @@
 </template>
 
 <script setup>
-import { categories } from '@/data/mock'
-import { HomeFilled, Document, Folder, UserFilled, Star, Clock, Bell, Edit } from '@element-plus/icons-vue'
+import { HomeFilled, Document, Folder, UserFilled, Star, Clock, Bell, Edit, EditPen } from '@element-plus/icons-vue'
 
 defineProps({
   expanded: { type: Boolean, default: true }
 })
-
-const categoryColors = {
-  '设计沉思': '#9B59B6',
-  '技术探索': '#3498DB',
-  '生活随笔': '#1ABC9C',
-  '读书笔记': '#E67E22',
-  '哲学思辨': '#E74C3C'
-}
-
-const getCategoryColor = (name) => categoryColors[name] || '#95A5A6'
 </script>
 
 <style lang="scss" scoped>

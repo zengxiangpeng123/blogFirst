@@ -60,6 +60,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Fold, Expand, EditPen, Bell, User, Setting, SwitchButton } from '@element-plus/icons-vue'
+import { logout } from '@/api/user'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 const emit = defineEmits(['toggle-sidebar'])
@@ -79,6 +81,27 @@ const handleSearch = () => {
   }
 }
 
+const handleLogout = async () => {
+  try {
+    await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    
+    await logout()
+    // 清除本地存储的token
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
+    ElMessage.success('退出成功')
+    router.push('/login')
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('退出失败:', error)
+    }
+  }
+}
+
 const handleCommand = (command) => {
   switch (command) {
     case 'profile':
@@ -88,7 +111,7 @@ const handleCommand = (command) => {
       router.push('/settings')
       break
     case 'logout':
-      console.log('退出登录')
+      handleLogout()
       break
   }
 }

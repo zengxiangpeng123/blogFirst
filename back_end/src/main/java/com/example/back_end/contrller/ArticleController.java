@@ -1,11 +1,14 @@
 package com.example.back_end.contrller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.back_end.common.Result;
 import com.example.back_end.exceptionHandler.ArticleException;
+import com.example.back_end.exceptionHandler.UserOperationException;
 import com.example.back_end.model.domain.Article;
 import com.example.back_end.model.domain.request.ArticleQueryRequest;
 import com.example.back_end.service.ArticleService;
+import com.example.back_end.service.UserService;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,9 @@ import java.util.List;
 public class ArticleController {
     @Resource
     private ArticleService articleService;
+
+    @Resource
+    private UserService userService;
 
     /**
      * 获取所有文章列表（不分页）
@@ -40,11 +46,23 @@ public class ArticleController {
         if (request == null) {
             request = new ArticleQueryRequest();
         }
-
         Page<Article> articlePage = articleService.getArticlePage(request);
         return Result.success(articlePage);
     }
 
+    /**
+     * 根据用户ID获取文章列表
+     * @param userId 用户ID
+     * @return 文章列表
+     */
+    @GetMapping("/list/{userId}")
+    public Result<List<Article>> getArticleList(@PathVariable String userId) {
+        if(StringUtils.isBlank(userId)) {
+            throw new UserOperationException(400, "用户ID不能为空");
+        }
+        List<Article> list = articleService.list(new QueryWrapper<Article>().eq("user_id", userId));
+        return Result.success(list);
+    }
     /**
      * 根据ID获取文章详情
      * @param id 文章ID
@@ -69,6 +87,7 @@ public class ArticleController {
      */
     @PostMapping("/add")
     public Result<Article> addArticle(@RequestBody Article article) {
+
         Article checkedArticle = checkArticle(article);
         try {
             articleService.save(checkedArticle);
@@ -140,12 +159,13 @@ public class ArticleController {
         Long categoryId = article.getCategoryId();
         String title = article.getTitle();
         String content = article.getContent();
+        Integer isPinned = article.getIsPinned();
 
         // 必填字段校验
-        if (userId == null) {
+        if (userId == null && isPinned != 0) {
             throw new ArticleException(400, "用户ID不能为空");
         }
-        if (categoryId == null) {
+        if (categoryId == null && isPinned != 0) {
             throw new ArticleException(400, "分类ID不能为空");
         }
         if (StringUtils.isBlank(title)) {

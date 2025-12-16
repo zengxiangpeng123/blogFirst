@@ -3,6 +3,7 @@ package com.example.back_end.contrller;
 import com.example.back_end.common.ErrorCode;
 import com.example.back_end.common.Result;
 import com.example.back_end.exceptionHandler.LoginException;
+import com.example.back_end.exceptionHandler.UserOperationException;
 import com.example.back_end.model.domain.User;
 import com.example.back_end.model.domain.request.UserLoginRequest;
 import com.example.back_end.model.domain.request.UserRegisterRequest;
@@ -75,6 +76,27 @@ public class UserController {
         request.getSession().setAttribute(USER_LOGIN_STATE, null);
 
         return Result.success(true);
+    }
+
+    /**
+     * 获取当前用户信息
+     * @param request http请求
+     * @return 当前用户信息(安全用户信息)
+     * @throws UserOperationException 登录异常
+     */
+    @PostMapping("/current")
+    public Result<User> getCurrentUser(HttpServletRequest request) {
+        if(request == null){
+            throw new UserOperationException(ErrorCode.NULL_ERROR,"请求为空!");
+        }
+        User safetyUser = new User();
+        try{
+             safetyUser = userService.getCurrentUser(request);
+
+        }catch (UserOperationException e){
+            throw new UserOperationException(ErrorCode.NOT_LOGIN,"用户没有登录,请登录!!");
+        }
+        return Result.success(safetyUser);
     }
 
 }

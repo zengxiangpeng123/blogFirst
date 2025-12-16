@@ -66,7 +66,7 @@ public class Article {
     private Integer isPinned;
 
     /**
-     * 是否发布,0是未发布,1是发布
+     * 是否发布,0是未发布,1是大家多可以看发布,2是仅自己可见
      */
     private Integer isPublished;
 

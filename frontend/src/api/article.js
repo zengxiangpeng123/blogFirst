@@ -29,6 +29,11 @@ export const getAllArticles = (pageNum = 1, pageSize = 10) => {
   })
 }
 
+// 根据用户ID获取文章列表
+export const getArticleListByUserId = (userId) => {
+  return request.get(`/article/list/${userId}`)
+}
+
 // 获取我的文章（个人中心、作品集）
 export const getMyArticles = (userId, pageNum = 1, pageSize = 10) => {
   return getArticlePage({

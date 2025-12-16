@@ -50,6 +50,12 @@
         <el-form-item label="摘要">
           <el-input v-model="articleForm.summary" type="textarea" :rows="3" placeholder="文章摘要" maxlength="200" show-word-limit />
         </el-form-item>
+        <el-form-item label="可见性">
+          <el-radio-group v-model="articleForm.isPublished">
+            <el-radio :value="1">公开发布</el-radio>
+            <el-radio :value="2">仅自己可见</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="设置">
           <el-checkbox v-model="articleForm.isPinned">置顶文章</el-checkbox>
         </el-form-item>
@@ -97,12 +103,43 @@ const tagOptions = ['设计', '技术', '前端', 'Vue', 'React', '用户体验'
 
 const goBack = () => router.back()
 
-const saveDraft = () => {
+const saveDraft = async () => {
+  if (!articleForm.title) {
+    ElMessage.warning('请输入文章标题')
+    return
+  }
+  
+  // 获取当前用户ID
+  const userInfoStr = localStorage.getItem('userInfo')
+  if (!userInfoStr) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+  
+  const userInfo = JSON.parse(userInfoStr)
+  
   saveStatus.value = '保存中...'
-  setTimeout(() => {
-    saveStatus.value = '已保存'
+  try {
+    const tagsString = articleForm.tags.join(',')
+    
+    await addArticle({
+      userId: userInfo.id,
+      categoryId: articleForm.categoryId,
+      title: articleForm.title,
+      content: articleForm.content || '',
+      summary: articleForm.summary || '',
+      tags: tagsString,
+      isPinned: articleForm.isPinned ? 1 : 0,
+      isPublished: 0  // 草稿，未发布
+    })
+    
+    saveStatus.value = '草稿已保存'
     ElMessage.success('草稿已保存')
-  }, 500)
+  } catch (error) {
+    saveStatus.value = '保存失败'
+    ElMessage.error(error.message || '保存失败')
+  }
 }
 
 const publishArticle = async () => {
@@ -143,7 +180,7 @@ const publishArticle = async () => {
       summary: articleForm.summary || articleForm.content.substring(0, 200),
       tags: tagsString,
       isPinned: articleForm.isPinned ? 1 : 0,
-      isPublished: 1
+      isPublished: articleForm.isPublished  // 1=公开发布, 2=仅自己可见
     })
     
     showPublishDialog.value = false

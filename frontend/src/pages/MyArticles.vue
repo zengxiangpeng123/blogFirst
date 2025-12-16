@@ -1,9 +1,9 @@
 <template>
-  <div class="archive-page">
+  <div class="my-articles-page">
     <header class="page-header">
       <div class="header-content">
-        <h1>全部文章</h1>
-        <p>共 {{ articles.length }} 篇文章，记录思考与成长</p>
+        <h1>我的文章</h1>
+        <p>共 {{ total }} 篇文章</p>
       </div>
       
       <div class="filter-bar">
@@ -17,12 +17,15 @@
             {{ tab.label }}
           </span>
         </div>
-        <div class="sort-options">
+        <div class="header-actions">
           <el-select v-model="sortBy" size="small" style="width: 120px">
             <el-option label="最新发布" value="latest" />
             <el-option label="最多阅读" value="views" />
-            <el-option label="阅读时长" value="readTime" />
           </el-select>
+          <el-button type="primary" size="small" @click="$router.push('/write')">
+            <el-icon><EditPen /></el-icon>
+            写文章
+          </el-button>
         </div>
       </div>
     </header>
@@ -47,9 +50,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { getArticlePage } from '@/api/article'
+import { getCurrentUser } from '@/api/user'
 import ArticleCard from '@/components/ArticleCard.vue'
+import { EditPen } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+
+const router = useRouter()
 
 const activeTab = ref('all')
 const sortBy = ref('latest')
@@ -58,12 +66,13 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
 const loading = ref(false)
+const userId = ref(null)
 
 // 分类ID映射
 const categoryMap = {
-  design: 1,  // 设计
-  tech: 2,    // 技术
-  life: 3     // 生活
+  design: 1,
+  tech: 2,
+  life: 3
 }
 
 const filterTabs = [
@@ -74,24 +83,23 @@ const filterTabs = [
   { label: '生活', value: 'life' }
 ]
 
-// 切换标签
 const handleTabChange = (value) => {
   activeTab.value = value
   currentPage.value = 1
   loadArticles()
 }
 
-// 加载文章列表
 const loadArticles = async () => {
+  if (!userId.value) return
+  
   loading.value = true
   try {
     const params = {
+      userId: userId.value,
       pageNum: currentPage.value,
-      pageSize: pageSize.value,
-      isPublished: 1
+      pageSize: pageSize.value
     }
     
-    // 根据标签添加筛选条件
     if (activeTab.value === 'pinned') {
       params.isPinned = 1
     } else if (categoryMap[activeTab.value]) {
@@ -109,19 +117,25 @@ const loadArticles = async () => {
   }
 }
 
-// 分页改变
 const handlePageChange = (page) => {
   currentPage.value = page
   loadArticles()
 }
 
-onMounted(() => {
-  loadArticles()
+onMounted(async () => {
+  try {
+    const res = await getCurrentUser()
+    userId.value = res.data.id
+    loadArticles()
+  } catch (error) {
+    ElMessage.error('请先登录')
+    router.push('/login')
+  }
 })
 </script>
 
 <style lang="scss" scoped>
-.archive-page {
+.my-articles-page {
   max-width: 100%;
 }
 
@@ -176,6 +190,12 @@ onMounted(() => {
       font-weight: 500;
     }
   }
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .article-list {
