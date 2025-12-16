@@ -61,17 +61,21 @@ const loading = ref(false)
 
 // 分类ID映射
 const categoryMap = {
-  design: 1,  // 设计
-  tech: 2,    // 技术
-  life: 3     // 生活
+  1: 1,  // 设计沉思
+  2: 2,  // 技术探索
+  3: 3,  // 生活随笔
+  4: 4,  // 读书笔记
+  5: 5   // 哲学思辨
 }
 
 const filterTabs = [
   { label: '全部', value: 'all' },
   { label: '置顶', value: 'pinned' },
-  { label: '设计', value: 'design' },
-  { label: '技术', value: 'tech' },
-  { label: '生活', value: 'life' }
+  { label: '设计沉思', value: '1' },
+  { label: '技术探索', value: '2' },
+  { label: '生活随笔', value: '3' },
+  { label: '读书笔记', value: '4' },
+  { label: '哲学思辨', value: '5' }
 ]
 
 // 切换标签
@@ -94,8 +98,8 @@ const loadArticles = async () => {
     // 根据标签添加筛选条件
     if (activeTab.value === 'pinned') {
       params.isPinned = 1
-    } else if (categoryMap[activeTab.value]) {
-      params.categoryId = categoryMap[activeTab.value]
+    } else if (activeTab.value !== 'all') {
+      params.categoryId = parseInt(activeTab.value)
     }
     
     const res = await getArticlePage(params)

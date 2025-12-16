@@ -24,10 +24,12 @@
       <!-- 个人内容 -->
       <div class="menu-section">
         <div class="section-title" v-show="expanded">我的内容</div>
+        
         <router-link to="/my-articles" class="menu-item" exact-active-class="active">
           <el-icon><Edit /></el-icon>
-          <span v-show="expanded">我的文章</span>
+          <span v-show="expanded">文章管理</span>
         </router-link>
+        
         <router-link to="/my-projects" class="menu-item" exact-active-class="active">
           <el-icon><Folder /></el-icon>
           <span v-show="expanded">我的作品</span>
@@ -71,7 +73,7 @@
 </template>
 
 <script setup>
-import { HomeFilled, Document, Folder, UserFilled, Star, Clock, Bell, Edit, EditPen } from '@element-plus/icons-vue'
+import { HomeFilled, Document, Folder, UserFilled, Star, Clock, Bell, Edit } from '@element-plus/icons-vue'
 
 defineProps({
   expanded: { type: Boolean, default: true }
