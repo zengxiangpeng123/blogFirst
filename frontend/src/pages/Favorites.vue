@@ -10,16 +10,16 @@
       </div>
     </header>
 
-    <div class="favorites-list" v-if="favorites.length > 0">
+    <div class="favorites-list" v-loading="loading" v-if="favorites.length > 0 || loading">
       <div v-for="item in favorites" :key="item.id" class="favorite-item hover-card">
         <div class="item-content">
-          <router-link :to="`/article/${item.id}`" class="title">{{ item.title }}</router-link>
+          <router-link :to="`/article/${item.articleId}`" class="title">{{ item.title }}</router-link>
           <div class="meta">
-            <span class="category">{{ item.category }}</span>
-            <span class="date">收藏于 {{ item.favoriteDate }}</span>
+            <span class="category">{{ item.categoryName || '未分类' }}</span>
+            <span class="date">收藏于 {{ formatDate(item.createdAt) }}</span>
           </div>
         </div>
-        <el-button type="danger" text @click="removeFavorite(item.id)">
+        <el-button type="danger" text @click="removeFavorite(item)">
           <el-icon><Delete /></el-icon>
         </el-button>
       </div>
@@ -35,17 +35,74 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Star, Delete } from '@element-plus/icons-vue'
+import { getFavoriteList, clickFavorite } from '@/api/favorite'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
-const favorites = ref([
-  { id: 1, title: '设计中的留白艺术：少即是多', category: '设计沉思', favoriteDate: '2024-07-16' },
-  { id: 2, title: '从Vue2到Vue3：一次渐进式的迁移之旅', category: '技术探索', favoriteDate: '2024-07-12' }
-])
+const router = useRouter()
+const favorites = ref([])
+const loading = ref(false)
+const userId = ref(null)
 
-const removeFavorite = (id) => {
-  favorites.value = favorites.value.filter(f => f.id !== id)
+// 加载收藏列表
+const loadFavorites = async () => {
+  if (!userId.value) return
+  
+  loading.value = true
+  try {
+    const res = await getFavoriteList({ userId: userId.value })
+    favorites.value = res.data || []
+  } catch (error) {
+    console.error('加载收藏失败', error)
+  } finally {
+    loading.value = false
+  }
 }
+
+// 取消收藏
+const removeFavorite = async (item) => {
+  try {
+    await ElMessageBox.confirm('确定要取消收藏这篇文章吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    
+    await clickFavorite({
+      userId: userId.value,
+      articleId: item.articleId,
+      isExist: 1  // 当前是已收藏状态
+    })
+    
+    ElMessage.success('已取消收藏')
+    // 从列表中移除
+    favorites.value = favorites.value.filter(f => f.id !== item.id)
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('操作失败')
+    }
+  }
+}
+
+// 格式化日期
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  return dateStr.replace('T', ' ').substring(0, 10)
+}
+
+onMounted(() => {
+  const userInfoStr = localStorage.getItem('userInfo')
+  if (userInfoStr) {
+    const userInfo = JSON.parse(userInfoStr)
+    userId.value = userInfo.id
+    loadFavorites()
+  } else {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+  }
+})
 </script>
 
 <style lang="scss" scoped>

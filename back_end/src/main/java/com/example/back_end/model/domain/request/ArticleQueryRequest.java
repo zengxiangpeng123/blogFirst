@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ArticleQueryRequest {
+    private Long id;  // 文章ID（用于查询单篇文章）
     private Long userId;
     private Long categoryId;
     private Integer isPinned;

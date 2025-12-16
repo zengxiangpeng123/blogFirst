@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class FavoriteQueryRequest {
     private Long userId;
-    private Long categoryId;
-    private Integer pageNum = 1;
-    private Integer pageSize = 10;
+    private Long articleId;
+    //点击的状态
+    private int isExist;
+
 }

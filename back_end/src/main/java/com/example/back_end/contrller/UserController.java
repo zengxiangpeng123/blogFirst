@@ -11,10 +11,7 @@ import com.example.back_end.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.example.back_end.contant.UserConstant.USER_LOGIN_STATE;
 
@@ -99,4 +96,22 @@ public class UserController {
         return Result.success(safetyUser);
     }
 
+    @PutMapping("/update")
+    public Result<User> updateUser(@RequestBody User user,HttpServletRequest request) {
+        if(user == null){
+            throw new UserOperationException(ErrorCode.PARAM_ERROR,"用户信息为空!");
+        }
+        User currentUser = userService.getCurrentUser(request);
+        if(currentUser == null){
+            throw new UserOperationException(ErrorCode.NOT_LOGIN,"用户没有登录,请登录!!");
+        }
+        user.setId(currentUser.getId());
+        boolean b = userService.updateById(user);
+        if(b){
+            User safetyUser = userService.getSafetyUser(user);
+            return Result.success(safetyUser);
+        }else{
+            throw new UserOperationException(ErrorCode.NULL_ERROR,"用户操作错误!!!");
+        }
+    }
 }

@@ -84,8 +84,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .home {
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .hero-carousel {
@@ -166,10 +165,6 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .home {
-    max-width: 100%;
-  }
-  
   .carousel-content {
     left: 20px;
     h1 { font-size: 1.5em; }

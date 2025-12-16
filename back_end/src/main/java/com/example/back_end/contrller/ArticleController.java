@@ -2,15 +2,17 @@ package com.example.back_end.contrller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.back_end.common.ErrorCode;
 import com.example.back_end.common.Result;
 import com.example.back_end.exceptionHandler.ArticleException;
 import com.example.back_end.exceptionHandler.UserOperationException;
 import com.example.back_end.model.domain.Article;
 import com.example.back_end.model.domain.request.ArticleQueryRequest;
-import com.example.back_end.model.domain.request.ArticleResponse;
+import com.example.back_end.model.domain.response.ArticleResponse;
 import com.example.back_end.service.ArticleService;
 import com.example.back_end.service.UserService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,17 +39,20 @@ public class ArticleController {
     }
 
     /**
-     * 分页查询文章列表（推荐使用，带分类名称和作者名称）
+     * 分页查询文章列表（推荐使用，带分类名称、作者名称和收藏状态）
      * @param request 查询请求参数
+     * @param httpRequest HTTP请求（用于获取当前用户）
      * @return 分页结果
      */
     @GetMapping("/page")
-    public Result<Page<ArticleResponse>> getArticlePage(ArticleQueryRequest request) {
+    public Result<Page<ArticleResponse>> getArticlePage(ArticleQueryRequest request, HttpServletRequest httpRequest) {
         // 参数校验
         if (request == null) {
             request = new ArticleQueryRequest();
         }
-        Page<ArticleResponse> articlePage = articleService.getArticlePage(request);
+        // 获取当前登录用户ID（用于判断收藏状态）
+        Long currentUserId = (Long) httpRequest.getSession().getAttribute("userId");
+        Page<ArticleResponse> articlePage = articleService.getArticlePage(request, currentUserId);
         return Result.success(articlePage);
     }
 
@@ -64,22 +69,31 @@ public class ArticleController {
         List<Article> list = articleService.list(new QueryWrapper<Article>().eq("user_id", userId));
         return Result.success(list);
     }
+
     /**
-     * 根据ID获取文章详情
+     * 根据ID获取文章详情+收藏状态
      * @param id 文章ID
      * @return 文章详情
      */
     @GetMapping("/{id}")
-    public Result<Article> getArticleById(@PathVariable Long id) {
+    public Result<ArticleResponse> getArticleById(@PathVariable Long id, HttpServletRequest request) {
         if (id == null || id <= 0) {
             throw new ArticleException(400, "文章ID不能为空");
         }
-        Article article = articleService.getById(id);
+        //获取用户id
+        Long userId = userService.getCurrentUser(request).getId();
+        if(userId == null) {
+            throw  new UserOperationException(ErrorCode.NOT_LOGIN, "请先登录");
+        }
+        //数据库查询,返回文章详情
+        ArticleResponse article = articleService.getArticleById(id, userId);
         if (article == null) {
             throw new ArticleException(404, "文章不存在");
         }
         return Result.success(article);
     }
+
+
 
     /**
      * 添加文章

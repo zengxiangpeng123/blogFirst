@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.back_end.model.domain.Favorite;
 import com.example.back_end.model.domain.request.FavoriteQueryRequest;
+import com.example.back_end.model.domain.response.FavoriteResponse;
+
+import java.util.List;
 
 /**
 * @author 15173
@@ -13,6 +16,9 @@ import com.example.back_end.model.domain.request.FavoriteQueryRequest;
 */
 public interface FavoriteService extends IService<Favorite> {
 
-
     Page<Favorite> getFavoriteArticles(FavoriteQueryRequest request);
+
+    Integer clickFavorite(FavoriteQueryRequest request);
+
+    List<FavoriteResponse> getFavoriteList(Long userId);
 }

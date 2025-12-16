@@ -3,6 +3,10 @@ package com.example.back_end.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.back_end.model.domain.Favorite;
+import com.example.back_end.model.domain.response.FavoriteResponse;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author 15173
@@ -12,6 +16,7 @@ import com.example.back_end.model.domain.Favorite;
 */
 public interface FavoriteMapper extends BaseMapper<Favorite> {
 
+    List<FavoriteResponse> selectFavoriteList(@Param("userId") Long userId);
 }
 
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.back_end.mapper.FavoriteMapper">
+
+    <!-- 查询用户收藏列表（带文章信息） -->
+    <select id="selectFavoriteList" resultType="com.example.back_end.model.domain.response.FavoriteResponse">
+        SELECT 
+            f.id,
+            f.article_id,
+            a.title,
+            c.name AS category_name,
+            f.created_at
+        FROM favorite f
+        LEFT JOIN article a ON f.article_id = a.id
+        LEFT JOIN category c ON a.category_id = c.id
+        WHERE f.user_id = #{userId} 
+          AND f.is_exist = 1
+          AND a.is_delete = 0
+        ORDER BY f.created_at DESC
+    </select>
+
+</mapper>

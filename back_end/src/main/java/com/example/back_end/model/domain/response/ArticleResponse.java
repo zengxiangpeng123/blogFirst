@@ -1,4 +1,4 @@
-package com.example.back_end.model.domain.request;
+package com.example.back_end.model.domain.response;
 
 import lombok.Data;
 
@@ -22,8 +22,13 @@ public class ArticleResponse {
     private Integer isPublished;
     private Date createdAt;
     private Date updatedAt;
+
+
     
     // 关联字段
     private String categoryName;  // 分类名称
     private String authorName;    // 作者名称（用户昵称或用户名）
+
+    //文章收藏
+    private int isExist; //是否收藏 0是没有,1是收藏
 }

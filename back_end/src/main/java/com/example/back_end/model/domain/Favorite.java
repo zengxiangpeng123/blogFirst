@@ -34,4 +34,9 @@ public class Favorite {
      * 
      */
     private Date createdAt;
+
+    /**
+     * 收藏状态：0-未收藏，1-已收藏
+     */
+    private int isExist;
 }

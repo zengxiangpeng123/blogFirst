@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.back_end.mapper.ArticleMapper;
 import com.example.back_end.model.domain.Article;
 import com.example.back_end.model.domain.request.ArticleQueryRequest;
-import com.example.back_end.model.domain.request.ArticleResponse;
+import com.example.back_end.model.domain.response.ArticleResponse;
 import com.example.back_end.service.ArticleService;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -24,22 +24,34 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     private ArticleMapper articleMapper;
 
     /**
-     * 分页查询文章（带分类名称和作者名称）
+     * 分页查询文章（带分类名称、作者名称和收藏状态）
      */
     @Override
-    public Page<ArticleResponse> getArticlePage(ArticleQueryRequest request) {
+    public Page<ArticleResponse> getArticlePage(ArticleQueryRequest request, Long currentUserId) {
         Page<ArticleResponse> page = new Page<>(request.getPageNum(), request.getPageSize());
         
         // 处理关键词
         String keyword = StringUtils.isNotBlank(request.getKeyword()) ? request.getKeyword() : null;
-        
+
         return articleMapper.selectArticlePage(
                 page,
+                request.getId(),
                 request.getUserId(),
                 request.getCategoryId(),
                 request.getIsPinned(),
                 request.getIsPublished(),
-                keyword
+                keyword,
+                currentUserId
         );
+    }
+
+    @Override
+    public ArticleResponse getArticleById(Long id, Long currentUserId) {
+        ArticleQueryRequest request = new ArticleQueryRequest();
+        request.setId(id);
+        request.setPageNum(1);
+        request.setPageSize(1);
+        Page<ArticleResponse> page = getArticlePage(request, currentUserId);
+        return page.getRecords().isEmpty() ? null : page.getRecords().get(0);
     }
 }
