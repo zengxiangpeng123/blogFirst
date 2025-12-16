@@ -5,7 +5,7 @@
       <div class="profile-info">
         <el-avatar :size="100" :src="userInfo.avatar" />
         <div class="info-content">
-          <h1>{{ userInfo.name }}</h1>
+          <h1>{{ userInfo.nickname }}</h1>
           <p class="bio">{{ userInfo.bio }}</p>
           <div class="stats">
             <div class="stat-item">
@@ -82,9 +82,9 @@
           <div class="article-info">
             <router-link :to="`/article/${article.id}`" class="title">{{ article.title }}</router-link>
             <div class="meta">
-              <span class="category">{{ article.category }}</span>
-              <span>{{ article.date }}</span>
-              <span><el-icon><View /></el-icon> {{ article.views }}</span>
+              <span class="category">{{ article.categoryName || '未分类' }}</span>
+              <span>{{ formatDate(article.createdAt) }}</span>
+              <span><el-icon><View /></el-icon> {{ article.viewCount || 0 }}</span>
             </div>
           </div>
           <div class="article-actions">
@@ -99,50 +99,68 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Document, View, Star, ChatDotRound } from '@element-plus/icons-vue'
-import { getMyArticles } from '@/api/article'
+import { getArticleListByUserId } from '@/api/article'
+import { getCurrentUser } from '@/api/user'
 import { ElMessage } from 'element-plus'
 
+const router = useRouter()
+
 const userInfo = ref({
-  name: '林清远',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-  bio: '一个热爱思考与写作的设计师，专注于用户体验与产品设计。',
-  articleCount: 45,
-  viewCount: 12580,
-  likeCount: 892,
-  followerCount: 256,
-  commentCount: 134
+  nickname: '',
+  avatar: '',
+  bio: '',
+  articleCount: 0,
+  viewCount: 0,
+  likeCount: 0,
+  followerCount: 0,
+  commentCount: 0
 })
 
 const myArticles = ref([])
 const loading = ref(false)
 
-// 加载我的文章
-const loadMyArticles = async () => {
-  // 从 localStorage 获取当前用户信息
-  const userInfoStr = localStorage.getItem('userInfo')
-  if (!userInfoStr) {
-    ElMessage.warning('请先登录')
-    return
-  }
-  
-  const currentUser = JSON.parse(userInfoStr)
-  const userId = currentUser.id
-  
+// 加载用户信息和文章
+const loadData = async () => {
   loading.value = true
   try {
-    const res = await getMyArticles(userId, 1, 5)
-    myArticles.value = res.data.records || []
+    // 获取当前用户信息
+    const userRes = await getCurrentUser()
+    const user = userRes.data || {}
+    
+    userInfo.value.nickname = user.nickname || '用户'
+    userInfo.value.avatar = user.avatar || '/images/图标.png'
+    userInfo.value.bio = user.bio || '这个人很懒，什么都没写~'
+    
+    // 获取用户文章列表
+    const articleRes = await getArticleListByUserId(user.id)
+    const allArticles = articleRes.data || []
+    
+    // 只显示已发布的文章
+    const publishedArticles = allArticles.filter(a => a.isPublished === 1)
+    myArticles.value = publishedArticles.slice(0, 5)
+    
+    // 统计数据
+    userInfo.value.articleCount = publishedArticles.length
+    userInfo.value.viewCount = publishedArticles.reduce((sum, a) => sum + (a.viewCount || 0), 0)
+    
   } catch (error) {
-    ElMessage.error('加载文章失败')
-    console.error(error)
+    ElMessage.error('请先登录')
+    router.push('/login')
   } finally {
     loading.value = false
   }
 }
 
+// 格式化日期
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  return dateStr.replace('T', ' ').substring(0, 10)
+}
+
 onMounted(() => {
-  loadMyArticles()
+  loadData()
 })
 </script>
 

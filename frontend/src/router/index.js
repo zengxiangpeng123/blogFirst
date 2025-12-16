@@ -16,7 +16,8 @@ const routes = [
   { path: '/settings', name: 'Settings', component: () => import('@/pages/Settings.vue') },
   { path: '/write', name: 'Write', component: () => import('@/pages/Write.vue'), meta: { hideLayout: true } },
   { path: '/my-articles', name: 'MyArticles', component: () => import('@/pages/MyArticles.vue') },
-  { path: '/my-projects', name: 'MyProjects', component: () => import('@/pages/MyProjects.vue') }
+  { path: '/my-projects', name: 'MyProjects', component: () => import('@/pages/MyProjects.vue') },
+  { path: '/search', name: 'Search', component: () => import('@/pages/Search.vue') }
 ]
 
 const router = createRouter({

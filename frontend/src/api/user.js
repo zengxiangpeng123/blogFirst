@@ -29,3 +29,11 @@ export const logout = () => {
 export const getCurrentUser = () => {
   return request.post('/user/current')
 }
+
+/**
+ * 更新用户信息
+ * @param {Object} data - { id, nickname, bio, email, avatar }
+ */
+export const updateUser = (data) => {
+  return request.put('/user/update', data)
+}

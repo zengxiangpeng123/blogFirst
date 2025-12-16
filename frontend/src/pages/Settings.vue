@@ -29,7 +29,7 @@
               </div>
             </el-form-item>
             <el-form-item label="昵称">
-              <el-input v-model="profileForm.name" placeholder="输入昵称" />
+              <el-input v-model="profileForm.nickname" placeholder="输入昵称" />
             </el-form-item>
             <el-form-item label="个人简介">
               <el-input v-model="profileForm.bio" type="textarea" :rows="3" placeholder="介绍一下自己" />
@@ -126,10 +126,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, markRaw } from 'vue'
+import { ref, reactive, markRaw, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { User, Lock, Bell, Brush } from '@element-plus/icons-vue'
+import { getCurrentUser, updateUser } from '@/api/user'
 import { ElMessage } from 'element-plus'
 
+const router = useRouter()
 const activeTab = ref('profile')
 const showPasswordDialog = ref(false)
 const twoFactorEnabled = ref(false)
@@ -142,10 +145,11 @@ const navItems = [
 ]
 
 const profileForm = reactive({
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-  name: '林清远',
-  bio: '一个热爱思考与写作的设计师',
-  email: 'contact@jingyusilu.com'
+  id: null,
+  avatar: '',
+  nickname: '',
+  bio: '',
+  email: ''
 })
 
 const passwordForm = reactive({ current: '', new: '', confirm: '' })
@@ -156,16 +160,50 @@ const appearance = reactive({ theme: 'light', primaryColor: '#1ABC9C' })
 
 const themeColors = ['#1ABC9C', '#3498DB', '#9B59B6', '#E74C3C', '#F39C12', '#2C3E50']
 
-const saveProfile = () => ElMessage.success('保存成功')
+// 加载用户信息
+const loadUserInfo = async () => {
+  try {
+    const res = await getCurrentUser()
+    const user = res.data || {}
+    profileForm.id = user.id
+    profileForm.avatar = user.avatar || '/images/图标.png'
+    profileForm.nickname = user.nickname || ''
+    profileForm.bio = user.bio || ''
+    profileForm.email = user.email || ''
+  } catch (error) {
+    ElMessage.error('请先登录')
+    router.push('/login')
+  }
+}
+
+const saveProfile = async () => {
+  try {
+    await updateUser({
+      id: profileForm.id,
+      nickname: profileForm.nickname,
+      bio: profileForm.bio,
+      email: profileForm.email,
+      avatar: profileForm.avatar
+    })
+    ElMessage.success('保存成功')
+  } catch (error) {
+    ElMessage.error('保存失败')
+  }
+}
 
 const changePassword = () => {
   if (passwordForm.new !== passwordForm.confirm) {
     ElMessage.error('两次输入的密码不一致')
     return
   }
+  // TODO: 调用修改密码API
   showPasswordDialog.value = false
   ElMessage.success('密码修改成功')
 }
+
+onMounted(() => {
+  loadUserInfo()
+})
 </script>
 
 <style lang="scss" scoped>

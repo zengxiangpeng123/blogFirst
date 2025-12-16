@@ -1,16 +1,14 @@
 <template>
-  <div class="article-page container">
+  <div class="article-page container" v-loading="loading">
     <div class="content-wrapper">
       <article class="article-main">
         <!-- 文章头部 -->
         <header class="article-header">
-          <span class="category">{{ article.category }}</span>
+          <span class="category">{{ article.categoryName || '未分类' }}</span>
           <h1>{{ article.title }}</h1>
           <div class="meta">
-            <span><el-icon><User /></el-icon> {{ author.name }}</span>
-            <span><el-icon><Calendar /></el-icon> {{ article.date }}</span>
-            <span><el-icon><Clock /></el-icon> {{ article.readTime }} 分钟阅读</span>
-            <span><el-icon><View /></el-icon> {{ article.views }} 次浏览</span>
+            <span><el-icon><Calendar /></el-icon> {{ formatDate(article.createdAt) }}</span>
+            <span><el-icon><View /></el-icon> {{ article.viewCount || 0 }} 次浏览</span>
           </div>
         </header>
         
@@ -19,14 +17,9 @@
         
         <!-- 文章尾部 -->
         <footer class="article-footer">
-          <div class="tags">
+          <div v-if="article.tags" class="tags">
             <el-icon><PriceTag /></el-icon>
-            <span v-for="tag in article.tags" :key="tag" class="tag">{{ tag }}</span>
-          </div>
-          
-          <div class="share">
-            <span>分享到：</span>
-            <el-button size="small" circle><el-icon><Share /></el-icon></el-button>
+            <span v-for="tag in article.tags.split(',')" :key="tag" class="tag">{{ tag }}</span>
           </div>
           
           <div class="copyright-notice">
@@ -35,35 +28,45 @@
           </div>
           
           <div class="nav-links">
-            <router-link to="/" class="prev">← 上一篇</router-link>
-            <router-link to="/" class="next">下一篇 →</router-link>
+            <router-link to="/archive" class="prev">← 返回文章列表</router-link>
           </div>
         </footer>
       </article>
-      
-      <!-- 目录侧边栏 -->
-      <aside class="toc-sidebar">
-        <div class="toc-widget">
-          <h4>目录</h4>
-          <ul>
-            <li><a href="#什么是留白">什么是留白</a></li>
-            <li><a href="#留白的价值">留白的价值</a></li>
-            <li><a href="#如何运用留白">如何运用留白</a></li>
-            <li><a href="#结语">结语</a></li>
-          </ul>
-        </div>
-      </aside>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { articleDetail as article, author } from '@/data/mock'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { getArticleById } from '@/api/article'
+import { ElMessage } from 'element-plus'
+
+const route = useRoute()
+const article = ref({})
+const loading = ref(false)
+
+// 加载文章详情
+const loadArticle = async () => {
+  const id = route.params.id
+  if (!id) return
+  
+  loading.value = true
+  try {
+    const res = await getArticleById(id)
+    article.value = res.data || {}
+  } catch (error) {
+    ElMessage.error('加载文章失败')
+    console.error(error)
+  } finally {
+    loading.value = false
+  }
+}
 
 // 简单的 Markdown 渲染
 const renderedContent = computed(() => {
-  return article.content
+  const content = article.value.content || ''
+  return content
     .replace(/^## (.+)$/gm, '<h2 id="$1">$1</h2>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
@@ -73,6 +76,16 @@ const renderedContent = computed(() => {
       if (match.startsWith('<')) return match
       return `<p>${match}</p>`
     })
+})
+
+// 格式化日期
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  return dateStr.replace('T', ' ').substring(0, 10)
+}
+
+onMounted(() => {
+  loadArticle()
 })
 </script>
 
@@ -172,44 +185,8 @@ const renderedContent = computed(() => {
   }
 }
 
-.toc-sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  
-  .toc-widget {
-    position: sticky;
-    top: 80px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    
-    h4 {
-      color: #2C3E50;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #1ABC9C;
-    }
-    
-    ul {
-      list-style: none;
-      
-      li {
-        margin-bottom: 10px;
-        
-        a {
-          color: #555;
-          font-size: 14px;
-          &:hover { color: #1ABC9C; }
-        }
-      }
-    }
-  }
-}
-
 @media (max-width: 992px) {
   .content-wrapper { flex-direction: column; }
-  .toc-sidebar { width: 100%; }
   .article-main { padding: 25px; }
 }
 </style>

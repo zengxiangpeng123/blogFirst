@@ -44,7 +44,7 @@
           <el-option v-for="m in 12" :key="m" :label="m + '月'" :value="m" />
         </el-select>
       </template>
-      <el-input v-model="searchKeyword" placeholder="请输入关键词" size="small" style="width: 200px; margin-left: auto" clearable>
+      <el-input v-model="searchKeyword" placeholder="请输入标题查询" size="small" style="width: 200px; margin-left: auto" clearable>
         <template #prefix>
           <el-icon><Search /></el-icon>
         </template>
@@ -161,6 +161,16 @@ watch(() => route.query.status, (status) => {
   }
 })
 
+// 监听搜索关键词变化（防抖）
+let searchTimer = null
+watch(searchKeyword, () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    currentPage.value = 1
+    loadArticles()
+  }, 300)
+})
+
 const handleStatusChange = (value) => {
   currentStatus.value = value
   currentPage.value = 1
@@ -212,6 +222,11 @@ const loadArticles = async () => {
     
     if (filterCategory.value) {
       params.categoryId = filterCategory.value
+    }
+    
+    // 关键词搜索
+    if (searchKeyword.value.trim()) {
+      params.keyword = searchKeyword.value.trim()
     }
     
     const res = await getArticlePage(params)

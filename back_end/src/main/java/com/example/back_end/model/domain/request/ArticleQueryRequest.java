@@ -8,7 +8,7 @@ public class ArticleQueryRequest {
     private Long categoryId;
     private Integer isPinned;
     private Integer isPublished;
-//    private String keyword;  // 关键词搜索
+    private String keyword;  // 关键词搜索（标题模糊匹配）
     private Integer pageNum = 1;
     private Integer pageSize = 10;
 }

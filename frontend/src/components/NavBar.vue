@@ -18,7 +18,7 @@
         <div class="search-wrapper">
           <el-input
             v-model="searchText"
-            placeholder="搜索文章、标签、分类..."
+            placeholder="搜索文章题目"
             class="search-input"
             @keyup.enter="handleSearch"
           >
@@ -76,8 +76,11 @@ const toggleSidebar = () => {
 }
 
 const handleSearch = () => {
-  if (searchText.value) {
-    console.log('搜索:', searchText.value)
+  if (searchText.value.trim()) {
+    router.push({
+      path: '/search',
+      query: { keyword: searchText.value.trim() }
+    })
   }
 }
 

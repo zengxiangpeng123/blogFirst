@@ -72,3 +72,13 @@ export const updateArticle = (data) => {
 export const deleteArticle = (id) => {
   return request.delete(`/article/delete/${id}`)
 }
+
+// 搜索文章（按标题关键词）
+export const searchArticles = (keyword, pageNum = 1, pageSize = 10) => {
+  return getArticlePage({
+    keyword,
+    isPublished: 1,
+    pageNum,
+    pageSize
+  })
+}

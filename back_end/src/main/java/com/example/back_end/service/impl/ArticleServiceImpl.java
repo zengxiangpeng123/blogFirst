@@ -9,6 +9,7 @@ import com.example.back_end.model.domain.Article;
 import com.example.back_end.model.domain.request.ArticleQueryRequest;
 import com.example.back_end.service.ArticleService;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -44,6 +45,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
         if (request.getIsPublished() != null) {
             queryWrapper.eq("is_published", request.getIsPublished());
+        }
+        // 关键词搜索（标题模糊匹配）
+        if (StringUtils.isNotBlank(request.getKeyword())) {
+            queryWrapper.like("title", request.getKeyword());
         }
         // 排序
         queryWrapper.orderByDesc("is_pinned", "created_at");
