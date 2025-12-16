@@ -83,11 +83,16 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.home {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .hero-carousel {
-  margin-bottom: 24px;
-  border-radius: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 
 .carousel-slide {
@@ -114,13 +119,13 @@ onMounted(() => {
   text-shadow: 0 2px 10px rgba(0,0,0,0.3);
   
   h1 {
-    font-size: 2.2em;
-    margin-bottom: 12px;
+    font-size: 2em;
+    margin-bottom: 10px;
     font-family: 'Georgia', serif;
   }
   
   p {
-    font-size: 1.1em;
+    font-size: 1em;
     opacity: 0.9;
   }
 }
@@ -129,49 +134,46 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
   
   h2 {
-    font-size: 1.2em;
-    color: #2C3E50;
-    position: relative;
-    padding-left: 12px;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 4px;
-      height: 18px;
-      background: #1ABC9C;
-      border-radius: 2px;
-    }
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
   }
   
   .more-link {
-    font-size: 14px;
+    font-size: 13px;
     color: #1ABC9C;
+    
+    &:hover {
+      color: #16a085;
+    }
   }
 }
 
 .article-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .pagination {
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
 @media (max-width: 768px) {
+  .home {
+    max-width: 100%;
+  }
+  
   .carousel-content {
     left: 20px;
-    h1 { font-size: 1.6em; }
-    p { font-size: 0.95em; }
+    h1 { font-size: 1.5em; }
+    p { font-size: 0.9em; }
   }
 }
 </style>

@@ -7,6 +7,7 @@ import com.example.back_end.exceptionHandler.ArticleException;
 import com.example.back_end.exceptionHandler.UserOperationException;
 import com.example.back_end.model.domain.Article;
 import com.example.back_end.model.domain.request.ArticleQueryRequest;
+import com.example.back_end.model.domain.request.ArticleResponse;
 import com.example.back_end.service.ArticleService;
 import com.example.back_end.service.UserService;
 import jakarta.annotation.Resource;
@@ -36,17 +37,17 @@ public class ArticleController {
     }
 
     /**
-     * 分页查询文章列表（推荐使用）
+     * 分页查询文章列表（推荐使用，带分类名称和作者名称）
      * @param request 查询请求参数
      * @return 分页结果
      */
     @GetMapping("/page")
-    public Result<Page<Article>> getArticlePage(ArticleQueryRequest request) {
+    public Result<Page<ArticleResponse>> getArticlePage(ArticleQueryRequest request) {
         // 参数校验
         if (request == null) {
             request = new ArticleQueryRequest();
         }
-        Page<Article> articlePage = articleService.getArticlePage(request);
+        Page<ArticleResponse> articlePage = articleService.getArticlePage(request);
         return Result.success(articlePage);
     }
 

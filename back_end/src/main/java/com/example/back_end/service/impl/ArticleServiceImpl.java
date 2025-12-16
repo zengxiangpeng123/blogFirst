@@ -1,12 +1,11 @@
 package com.example.back_end.service.impl;
 
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.back_end.mapper.ArticleMapper;
 import com.example.back_end.model.domain.Article;
 import com.example.back_end.model.domain.request.ArticleQueryRequest;
+import com.example.back_end.model.domain.request.ArticleResponse;
 import com.example.back_end.service.ArticleService;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -25,41 +24,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     private ArticleMapper articleMapper;
 
     /**
-     * 获得文章分页列表
-     * @param request 文章查询请求
-     * @return 文章分页列表
+     * 分页查询文章（带分类名称和作者名称）
      */
     @Override
-    public Page<Article> getArticlePage(ArticleQueryRequest request) {
-        QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
-
-        // 条件查询
-        if (request.getUserId() != null) {
-            queryWrapper.eq("user_id", request.getUserId());
-        }
-        if (request.getCategoryId() != null) {
-            queryWrapper.eq("category_id", request.getCategoryId());
-        }
-        if (request.getIsPinned() != null) {
-            queryWrapper.eq("is_pinned", request.getIsPinned());
-        }
-        if (request.getIsPublished() != null) {
-            queryWrapper.eq("is_published", request.getIsPublished());
-        }
-        // 关键词搜索（标题模糊匹配）
-        if (StringUtils.isNotBlank(request.getKeyword())) {
-            queryWrapper.like("title", request.getKeyword());
-        }
-        // 排序
-        queryWrapper.orderByDesc("is_pinned", "created_at");
-        // 分页
-        Page<Article> page = new Page<>(request.getPageNum(), request.getPageSize());
-        return this.page(page, queryWrapper);
+    public Page<ArticleResponse> getArticlePage(ArticleQueryRequest request) {
+        Page<ArticleResponse> page = new Page<>(request.getPageNum(), request.getPageSize());
+        
+        // 处理关键词
+        String keyword = StringUtils.isNotBlank(request.getKeyword()) ? request.getKeyword() : null;
+        
+        return articleMapper.selectArticlePage(
+                page,
+                request.getUserId(),
+                request.getCategoryId(),
+                request.getIsPinned(),
+                request.getIsPublished(),
+                keyword
+        );
     }
-
-
 }
-
-
-
-

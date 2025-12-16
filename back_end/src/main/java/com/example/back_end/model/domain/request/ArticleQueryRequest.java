@@ -11,4 +11,9 @@ public class ArticleQueryRequest {
     private String keyword;  // 关键词搜索（标题模糊匹配）
     private Integer pageNum = 1;
     private Integer pageSize = 10;
+
+    //将对应的实体类属性名和请求参数名进行映射
+    private String categoryName;
+    private String username;
+
 }

@@ -309,16 +309,17 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .my-articles-page {
-  max-width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .status-tabs {
   display: flex;
   align-items: center;
   gap: 24px;
-  padding: 16px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #E8E8E8;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   
   .status-tab {
     font-size: 14px;
@@ -347,24 +348,23 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 0;
-  margin-bottom: 16px;
+  padding: 8px 0;
+  margin-bottom: 12px;
 }
 
 .article-table {
   background: #fff;
   border-radius: 8px;
-  overflow: hidden;
 }
 
 .table-header {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 12px;
   background: #FAFAFA;
   border-bottom: 1px solid #E8E8E8;
   font-size: 13px;
-  color: #666;
+  color: #999;
 }
 
 .table-body {
@@ -373,8 +373,8 @@ onMounted(async () => {
 
 .table-row {
   display: flex;
-  align-items: center;
-  padding: 16px;
+  align-items: flex-start;
+  padding: 14px 12px;
   border-bottom: 1px solid #F0F0F0;
   
   &:hover {
@@ -389,28 +389,30 @@ onMounted(async () => {
 .col-article {
   flex: 1;
   display: flex;
-  gap: 16px;
+  gap: 12px;
   min-width: 0;
 }
 
 .col-stat {
-  width: 80px;
+  width: 60px;
   text-align: center;
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: #999;
+  padding-top: 8px;
 }
 
 .col-action {
-  width: 150px;
+  width: 130px;
   display: flex;
-  gap: 8px;
+  gap: 4px;
   justify-content: flex-end;
+  padding-top: 6px;
 }
 
 .article-cover {
-  width: 100px;
-  height: 70px;
-  border-radius: 6px;
+  width: 80px;
+  height: 56px;
+  border-radius: 4px;
   overflow: hidden;
   background: #F5F5F5;
   flex-shrink: 0;
@@ -426,8 +428,8 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     height: 100%;
-    font-size: 12px;
-    color: #999;
+    font-size: 11px;
+    color: #bbb;
   }
 }
 
@@ -436,13 +438,16 @@ onMounted(async () => {
   min-width: 0;
   
   .article-title {
-    font-size: 15px;
-    color: #2C3E50;
-    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
     cursor: pointer;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     
     &:hover {
       color: #1ABC9C;
@@ -454,6 +459,13 @@ onMounted(async () => {
     align-items: center;
     gap: 8px;
     
+    .el-tag {
+      height: 20px;
+      line-height: 18px;
+      padding: 0 6px;
+      font-size: 11px;
+    }
+    
     .date {
       font-size: 12px;
       color: #999;
@@ -463,10 +475,14 @@ onMounted(async () => {
 
 .pagination {
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
 @media (max-width: 768px) {
+  .my-articles-page {
+    max-width: 100%;
+  }
+  
   .status-tabs {
     flex-wrap: wrap;
     gap: 12px;
@@ -482,6 +498,11 @@ onMounted(async () => {
   
   .col-action {
     width: auto;
+  }
+  
+  .article-cover {
+    width: 60px;
+    height: 42px;
   }
 }
 </style>

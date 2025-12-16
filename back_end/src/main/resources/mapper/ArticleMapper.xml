@@ -2,7 +2,44 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.back_end.mapper.ArticleMapper">
 
-    <select id="getListByUserId">
-        select * from article where user_id = #{userId}
+    <!-- 分页查询文章（带分类名称和作者名称） -->
+    <select id="selectArticlePage" resultType="com.example.back_end.model.domain.request.ArticleResponse">
+        SELECT 
+            a.id,
+            a.user_id,
+            a.category_id,
+            a.title,
+            a.summary,
+            a.content,
+            a.cover,
+            a.tags,
+            a.view_count,
+            a.is_pinned,
+            a.is_published,
+            a.created_at,
+            a.updated_at,
+            c.name AS category_name,
+            COALESCE(u.nickname, u.username) AS author_name
+        FROM article a
+        LEFT JOIN category c ON a.category_id = c.id
+        LEFT JOIN user u ON a.user_id = u.id
+        WHERE a.is_delete = 0
+        <if test="userId != null">
+            AND a.user_id = #{userId}
+        </if>
+        <if test="categoryId != null">
+            AND a.category_id = #{categoryId}
+        </if>
+        <if test="isPinned != null">
+            AND a.is_pinned = #{isPinned}
+        </if>
+        <if test="isPublished != null">
+            AND a.is_published = #{isPublished}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND a.title LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY a.is_pinned DESC, a.created_at DESC
     </select>
+
 </mapper>
